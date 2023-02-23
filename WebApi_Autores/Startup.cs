@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
+using WebApi_Autores.Middleware;
 
 namespace WebApi_Autores
 {
@@ -26,6 +27,11 @@ namespace WebApi_Autores
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            //llamamos al middleware 
+            //app.UseMiddleware<LoguearRespuestaHTTPMiddleware>();
+
+            app.UseLoguearRespuestaHTTP();
+            
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
