@@ -1,12 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi_Autores.Entidades;
+using WebApi_Autores.Filtros;
 
 namespace WebApi_Autores.Controllers
 {
 
     [ApiController]
     [Route("api/autores")]
+    //Protegemos los endpoints a nivel controlador
+    //[Authorize]
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -19,7 +23,9 @@ namespace WebApi_Autores.Controllers
         [HttpGet]
         [HttpGet("/listado")]
         [HttpGet("listado")]
-
+        [ResponseCache(Duration=10)]
+        [ServiceFilter(typeof(MiFiltroDeAccion))]
+        //[Authorize]
         public async Task<ActionResult<List<Autor>>> Get()
         {
             return await context.Autores.Include(x => x.Libros).ToListAsync();
