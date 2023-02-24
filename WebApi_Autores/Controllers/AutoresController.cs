@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebApi_Autores.DTOs;
 using WebApi_Autores.Entidades;
 using WebApi_Autores.Filtros;
 
@@ -14,10 +16,12 @@ namespace WebApi_Autores.Controllers
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
+        private readonly IMapper mapper;
 
-        public AutoresController(ApplicationDbContext context)
+        public AutoresController(ApplicationDbContext context, IMapper mapper)
         {
             this.context = context;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -26,38 +30,40 @@ namespace WebApi_Autores.Controllers
         [ResponseCache(Duration=10)]
         [ServiceFilter(typeof(MiFiltroDeAccion))]
         //[Authorize]
-        public async Task<ActionResult<List<Autor>>> Get()
+        public async Task<ActionResult<List<AutorDTO>>> Get()
         {
-            return await context.Autores.Include(x => x.Libros).ToListAsync();
+            var autores = await context.Autores.ToListAsync();
+            return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpGet("{id:int}/{param2?}")]
-        public async Task<ActionResult<Autor>> Get(int id, string param2)
+        //[HttpGet("{id:int}/{param2?}")]
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<AutorDTO>> Get(int id)
         {
             var autor = await context.Autores.FirstOrDefaultAsync(x=>x.Id== id);
+            
             if(autor == null)
             {
                 return NotFound();
             }
 
-            return autor;
+            return mapper.Map<AutorDTO>(autor);
         }
 
         [HttpGet("{nombre}")]
-        public async Task<ActionResult<Autor>> Get(string nombre)
+        public async Task<ActionResult<List<AutorDTO>>> Get(string nombre)
         {
-            var autor = await context.Autores.FirstOrDefaultAsync(x => x.Nombre.Contains(nombre));
-            if (autor == null)
-            {
-                return NotFound();
-            }
+            var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
 
-            return autor;
+            return mapper.Map<List<AutorDTO>>(autores);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post(Autor autor)
+        public async Task<ActionResult> Post([FromBody] AutorCreacionDTO autorCreacionDTO)
         {
+
+            var autor = mapper.Map<Autor>(autorCreacionDTO);
+            
             context.Add(autor);
             await context.SaveChangesAsync();
 

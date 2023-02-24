@@ -7,10 +7,9 @@ namespace WebApi_Autores.Entidades
     {
         public int Id { get; set; }
         [Required(ErrorMessage="El campo {0} es necesario")]
-        [StringLength(50)]
+        [StringLength(maximumLength: 120)]
         public string Nombre { get; set; }
         [NotMapped]
         public int Edad { get; set; }
-        public List<Libro> Libros { get; set; }
     }
 }

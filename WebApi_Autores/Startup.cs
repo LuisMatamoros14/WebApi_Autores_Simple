@@ -28,6 +28,8 @@ namespace WebApi_Autores
                 options.UseSqlServer(Configuration.GetConnectionString("defaultConnection"));
             });
 
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddTransient<MiFiltroDeAccion>();
             services.AddHostedService<EscribirEnArchivo>();
 
