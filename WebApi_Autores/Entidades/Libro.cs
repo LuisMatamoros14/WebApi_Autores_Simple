@@ -9,6 +9,6 @@ namespace WebApi_Autores.Entidades
         [Required(ErrorMessage ="El campo {0} es necesario")]
         public string Titulo { get; set; }
         public List<Comentario> Comentarios { get; set; }
-
+        public List<AutorLibro> AutoresLibros { get; set; }
     }
 }
