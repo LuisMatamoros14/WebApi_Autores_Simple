@@ -1,0 +1,11 @@
+Proceso iniciado
+Proceso finalizado
+Proceso iniciado
+Proceso en ejecucion: 23/02/2023 06:12:41
+Proceso en ejecucion: 23/02/2023 06:12:46
+Proceso en ejecucion: 23/02/2023 06:12:51
+Proceso en ejecucion: 23/02/2023 06:12:56
+Proceso en ejecucion: 23/02/2023 06:13:01
+Proceso en ejecucion: 23/02/2023 06:13:06
+Proceso en ejecucion: 23/02/2023 06:13:11
+Proceso finalizado
