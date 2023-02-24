@@ -9,6 +9,6 @@ namespace WebApi_Autores.DTOs
         [Required(ErrorMessage = "El campo {0} es necesario")]
         public string Titulo { get; set; }
         public List<ComentarioDTO> Comentarios { get; set; }
-        public List<AutorDTO> Autores { get; set; }
+        
     }
 }
