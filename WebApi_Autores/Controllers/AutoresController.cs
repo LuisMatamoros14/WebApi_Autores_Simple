@@ -37,7 +37,7 @@ namespace WebApi_Autores.Controllers
         }
 
         //[HttpGet("{id:int}/{param2?}")]
-        [HttpGet("{id:int}")]
+        [HttpGet("{id:int}",Name ="ObtenerAutor")]
         public async Task<ActionResult<AutorDTOConLibros>> Get(int id)
         {
             var autor = await context.Autores
@@ -70,7 +70,9 @@ namespace WebApi_Autores.Controllers
             context.Add(autor);
             await context.SaveChangesAsync();
 
-            return Ok();
+            var autorDTO = mapper.Map<AutorDTO>(autor);
+
+            return CreatedAtRoute("ObtenerAutor", new { id = autor.Id }, autorDTO);
         }
 
         [HttpPut("{id:int}")]
