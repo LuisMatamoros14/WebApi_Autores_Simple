@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using WebApi_Autores.Filtros;
@@ -30,6 +31,7 @@ namespace WebApi_Autores
             });
 
             services.AddAutoMapper(typeof(Startup));
+            services.AddIdentity<IdentityUser,IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
 
             services.AddTransient<MiFiltroDeAccion>();
             services.AddHostedService<EscribirEnArchivo>();
