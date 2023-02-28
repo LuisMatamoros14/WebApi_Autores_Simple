@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApi_Autores.DTOs;
@@ -75,6 +76,38 @@ namespace WebApi_Autores.Controllers
             libroDB = mapper.Map(libroCreacionDTO, libroDB);
 
             AsignarOrdenAutores(libroDB);
+            await context.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPatch("{id:int}")]
+        public async Task<ActionResult> Patch(int id, JsonPatchDocument<LibroPatchDTO> patchDocument)
+        {
+            if(patchDocument == null)
+            {
+                return BadRequest();
+            }
+
+            var libro = await context.Libros.FirstOrDefaultAsync(x => x.Id == id);
+            
+            if(libro == null)
+            {
+                return NotFound();
+            }
+
+            var libroDTO = mapper.Map<LibroPatchDTO>(libro);
+
+            patchDocument.ApplyTo(libroDTO, ModelState);
+
+            var esValido = TryValidateModel(libroDTO);
+
+            if (!esValido)
+            {
+                return BadRequest(ModelState);
+            }
+
+            mapper.Map(libroDTO, libro);
             await context.SaveChangesAsync();
 
             return NoContent();
