@@ -49,7 +49,10 @@ namespace WebApi_Autores
                     ClockSkew = TimeSpan.Zero
                 });
 
-
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("EsAdmin", policy => policy.RequireClaim("EsAdmin"));
+            });
 
             services.AddTransient<MiFiltroDeAccion>();
             services.AddHostedService<EscribirEnArchivo>();
