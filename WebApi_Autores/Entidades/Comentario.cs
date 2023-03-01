@@ -1,4 +1,6 @@
-﻿namespace WebApi_Autores.Entidades
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace WebApi_Autores.Entidades
 {
     public class Comentario
     {
@@ -7,5 +9,7 @@
         public int LibroId { get; set; }
         //campo de navegacion
         public Libro Libro { get; set; }
+        public string UsuarioId { get; set; }
+        public IdentityUser Usuuario { get; set; }
     }
 }

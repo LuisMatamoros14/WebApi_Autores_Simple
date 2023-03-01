@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,7 @@ namespace WebApi_Autores.Controllers
     [ApiController]
     [Route("api/autores")]
     //Protegemos los endpoints a nivel controlador
-    //[Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -29,7 +30,7 @@ namespace WebApi_Autores.Controllers
         //[HttpGet("listado")]
         //[ResponseCache(Duration=10)]
         //[ServiceFilter(typeof(MiFiltroDeAccion))]
-        //[Authorize]
+        [AllowAnonymous]
         public async Task<ActionResult<List<AutorDTO>>> Get()
         {
             var autores = await context.Autores.ToListAsync();
