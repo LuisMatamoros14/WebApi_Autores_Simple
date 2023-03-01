@@ -10,6 +10,6 @@ namespace WebApi_Autores.Entidades
         //campo de navegacion
         public Libro Libro { get; set; }
         public string UsuarioId { get; set; }
-        public IdentityUser Usuuario { get; set; }
+        public IdentityUser Usuario { get; set; }
     }
 }

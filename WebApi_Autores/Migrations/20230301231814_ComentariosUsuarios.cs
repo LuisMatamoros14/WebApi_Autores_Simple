@@ -5,32 +5,26 @@
 namespace WebApi_Autores.Migrations
 {
     /// <inheritdoc />
-    public partial class ComentarioUsuario : Migration
+    public partial class ComentariosUsuarios : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "UsuarioId1",
-                table: "Comentarios",
-                type: "nvarchar(max)",
-                nullable: true);
-
-            migrationBuilder.AddColumn<string>(
-                name: "UsuuarioId",
+                name: "UsuarioId",
                 table: "Comentarios",
                 type: "nvarchar(450)",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comentarios_UsuuarioId",
+                name: "IX_Comentarios_UsuarioId",
                 table: "Comentarios",
-                column: "UsuuarioId");
+                column: "UsuarioId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Comentarios_AspNetUsers_UsuuarioId",
+                name: "FK_Comentarios_AspNetUsers_UsuarioId",
                 table: "Comentarios",
-                column: "UsuuarioId",
+                column: "UsuarioId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id");
         }
@@ -39,19 +33,15 @@ namespace WebApi_Autores.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Comentarios_AspNetUsers_UsuuarioId",
+                name: "FK_Comentarios_AspNetUsers_UsuarioId",
                 table: "Comentarios");
 
             migrationBuilder.DropIndex(
-                name: "IX_Comentarios_UsuuarioId",
+                name: "IX_Comentarios_UsuarioId",
                 table: "Comentarios");
 
             migrationBuilder.DropColumn(
-                name: "UsuarioId1",
-                table: "Comentarios");
-
-            migrationBuilder.DropColumn(
-                name: "UsuuarioId",
+                name: "UsuarioId",
                 table: "Comentarios");
         }
     }

@@ -12,8 +12,8 @@ using WebApi_Autores;
 namespace WebApi_Autores.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230301205809_ComentarioUsuario")]
-    partial class ComentarioUsuario
+    [Migration("20230301231535_Comentarios")]
+    partial class Comentarios
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -273,17 +273,14 @@ namespace WebApi_Autores.Migrations
                     b.Property<int>("LibroId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UsuarioId1")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UsuuarioId")
+                    b.Property<string>("UsuarioId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LibroId");
 
-                    b.HasIndex("UsuuarioId");
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Comentarios");
                 });
@@ -387,13 +384,13 @@ namespace WebApi_Autores.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Usuuario")
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "Usuario")
                         .WithMany()
-                        .HasForeignKey("UsuuarioId");
+                        .HasForeignKey("UsuarioId");
 
                     b.Navigation("Libro");
 
-                    b.Navigation("Usuuario");
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("WebApi_Autores.Entidades.Autor", b =>
