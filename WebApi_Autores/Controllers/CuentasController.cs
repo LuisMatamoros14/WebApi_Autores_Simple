@@ -13,17 +13,15 @@ namespace WebApi_Autores.Controllers
     [Route("api/cuentas")]
     public class CuentasController: ControllerBase
     {
-        private readonly IMapper mapper;
-        private readonly ApplicationDbContext context;
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
+        private readonly SignInManager<IdentityUser> signInManager;
 
-        public CuentasController(IMapper mapper, ApplicationDbContext context, UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager)
         {
-            this.mapper = mapper;
-            this.context = context;
             this.userManager = userManager;
             this.configuration = configuration;
+            this.signInManager = signInManager;
         }
 
         [HttpPost("registrar")]
@@ -39,6 +37,21 @@ namespace WebApi_Autores.Controllers
             else
             {
                 return BadRequest(resultado.Errors);
+            }
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<RespuestaAutenticacion>> Login(CredencialesUsuario credencialesUsuario)
+        {
+            var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password, isPersistent: false, lockoutOnFailure: false);
+
+            if (resultado.Succeeded)
+            {
+                return ConstruirToken(credencialesUsuario);
+            }
+            else
+            {
+                return BadRequest("Login incorrecto");
             }
         }
 
