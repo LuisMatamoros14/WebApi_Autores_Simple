@@ -54,6 +54,14 @@ namespace WebApi_Autores
                 options.AddPolicy("EsAdmin", policy => policy.RequireClaim("EsAdmin"));
             });
 
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://www.apirequest.io").AllowAnyMethod().AllowAnyHeader().WithExposedHeaders();
+                });
+            });
+
             services.AddTransient<MiFiltroDeAccion>();
             services.AddHostedService<EscribirEnArchivo>();
             services.AddResponseCaching();
@@ -104,6 +112,8 @@ namespace WebApi_Autores
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            
+            app.UseCors();
 
             //Filtro de cache
             app.UseResponseCaching();
