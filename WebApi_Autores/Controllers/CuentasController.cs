@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -8,6 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using WebApi_Autores.DTOs;
+using WebApi_Autores.Servicios;
 
 namespace WebApi_Autores.Controllers
 {
@@ -18,12 +20,63 @@ namespace WebApi_Autores.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
         private readonly SignInManager<IdentityUser> signInManager;
+        private readonly HashService hashService;
+        private readonly IDataProtector dataProtector;
 
-        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager)
+        public CuentasController(UserManager<IdentityUser> userManager, IConfiguration configuration, SignInManager<IdentityUser> signInManager,
+            IDataProtectionProvider dataProtectionProvider, HashService hashService)
         {
             this.userManager = userManager;
             this.configuration = configuration;
             this.signInManager = signInManager;
+            this.hashService = hashService;
+            dataProtector = dataProtectionProvider.CreateProtector("llave_de_proposito");
+        }
+
+        [HttpGet("ejemploEncriptar")]
+        public ActionResult Encriptar()
+        {
+            var textoPlano = "Mensaje de prueba";
+            var textoCifrado = dataProtector.Protect(textoPlano);
+            var textoDescifrado = dataProtector.Unprotect(textoCifrado);
+
+            return Ok(new
+            {
+                textoPlano = textoPlano,
+                textoCifrado = textoCifrado,
+                textoDescifrado = textoDescifrado
+            });
+        }
+
+        [HttpGet("ejemploEncriptarPorTiempo")]
+        public ActionResult EncriptarPorTiempo()
+        {
+            var protectorLimitado = dataProtector.ToTimeLimitedDataProtector();
+            var textoPlano = "Mensaje de prueba";
+            var textoCifrado = protectorLimitado.Protect(textoPlano, lifetime: TimeSpan.FromSeconds(5));
+            Thread.Sleep(6000);
+            var textoDescifrado = protectorLimitado.Unprotect(textoCifrado);
+
+            return Ok(new
+            {
+                textoPlano = textoPlano,
+                textoCifrado = textoCifrado,
+                textoDescifrado = textoDescifrado
+            });
+        }
+
+        [HttpGet("/hash/{textoPlano}")]
+        public ActionResult RealizarHash(string textoPlano)
+        {
+            var resultado1 = hashService.Hash(textoPlano);
+            var resultado2 = hashService.Hash(textoPlano);
+
+            return Ok(new
+            {
+                textoPlano = textoPlano,
+                Hash1 = resultado1,
+                Hash2 = resultado2
+            });
         }
 
         [HttpPost("registrar")]

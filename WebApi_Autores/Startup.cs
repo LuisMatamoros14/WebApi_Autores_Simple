@@ -62,6 +62,11 @@ namespace WebApi_Autores
                 });
             });
 
+            //servicio para encriptar
+            services.AddDataProtection();
+
+            services.AddTransient<HashService>();
+
             services.AddTransient<MiFiltroDeAccion>();
             services.AddHostedService<EscribirEnArchivo>();
             services.AddResponseCaching();
