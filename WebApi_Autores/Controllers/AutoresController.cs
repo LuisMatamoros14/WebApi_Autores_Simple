@@ -25,7 +25,7 @@ namespace WebApi_Autores.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet(Name ="obtenerAutores")]
         //[HttpGet("/listado")]
         //[HttpGet("listado")]
         //[ResponseCache(Duration=10)]
@@ -38,7 +38,7 @@ namespace WebApi_Autores.Controllers
         }
 
         //[HttpGet("{id:int}/{param2?}")]
-        [HttpGet("{id:int}",Name ="ObtenerAutor")]
+        [HttpGet("{id:int}",Name ="obtenerAutor")]
         public async Task<ActionResult<AutorDTOConLibros>> Get(int id)
         {
             var autor = await context.Autores
@@ -54,7 +54,7 @@ namespace WebApi_Autores.Controllers
             return mapper.Map<AutorDTOConLibros>(autor);
         }
 
-        [HttpGet("{nombre}")]
+        [HttpGet("{nombre}", Name ="obtenerAutorPorNombre")]
         public async Task<ActionResult<List<AutorDTO>>> Get(string nombre)
         {
             var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
@@ -62,7 +62,7 @@ namespace WebApi_Autores.Controllers
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpPost]
+        [HttpPost(Name ="crearAutor")]
         public async Task<ActionResult> Post([FromBody] AutorCreacionDTO autorCreacionDTO)
         {
 
@@ -76,7 +76,7 @@ namespace WebApi_Autores.Controllers
             return CreatedAtRoute("ObtenerAutor", new { id = autor.Id }, autorDTO);
         }
 
-        [HttpPut("{id:int}")]
+        [HttpPut("{id:int}",Name ="actualizarAutor")]
         public async Task<ActionResult> Put(AutorCreacionDTO autorCreacionDTO, int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id == id);
@@ -93,7 +93,7 @@ namespace WebApi_Autores.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}")]
+        [HttpDelete("{id:int}",Name ="borrarAutor")]
         public async Task<ActionResult> Delete(int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id == id);
