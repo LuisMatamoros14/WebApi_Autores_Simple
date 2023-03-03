@@ -18,11 +18,13 @@ namespace WebApi_Autores.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly IMapper mapper;
+        private readonly IAuthorizationService authorizationService;
 
-        public AutoresController(ApplicationDbContext context, IMapper mapper)
+        public AutoresController(ApplicationDbContext context, IMapper mapper, IAuthorizationService authorizationService)
         {
             this.context = context;
             this.mapper = mapper;
+            this.authorizationService = authorizationService;
         }
 
         [HttpGet(Name ="obtenerAutores")]
@@ -31,14 +33,35 @@ namespace WebApi_Autores.Controllers
         //[ResponseCache(Duration=10)]
         //[ServiceFilter(typeof(MiFiltroDeAccion))]
         [AllowAnonymous]
-        public async Task<ActionResult<List<AutorDTO>>> Get()
+        public async Task<IActionResult> Get([FromQuery] bool incluirHATEOAS=true)
         {
             var autores = await context.Autores.ToListAsync();
-            return mapper.Map<List<AutorDTO>>(autores);
+            var dtos = mapper.Map<List<AutorDTO>>(autores);
+
+            if (incluirHATEOAS)
+            {
+                var esAdmin = await authorizationService.AuthorizeAsync(User, "EsAdmin");
+
+                dtos.ForEach(dto => GenerarEnlaces(dto, esAdmin.Succeeded));
+
+                var resultado = new ColeccionDeRecursos<AutorDTO> { Valores = dtos };
+
+                resultado.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutores", new { }), descripcion: "self", metodo: "GET"));
+
+                if (esAdmin.Succeeded)
+                {
+                    resultado.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("crearAutor", new { }), descripcion: "autor-crear", metodo: "POST"));
+                }
+
+                return Ok(resultado);
+            }            
+
+            return Ok(dtos);
         }
 
         //[HttpGet("{id:int}/{param2?}")]
         [HttpGet("{id:int}",Name ="obtenerAutor")]
+        [AllowAnonymous]
         public async Task<ActionResult<AutorDTOConLibros>> Get(int id)
         {
             var autor = await context.Autores
@@ -52,15 +75,21 @@ namespace WebApi_Autores.Controllers
             }
 
             var dto =  mapper.Map<AutorDTOConLibros>(autor);
-            GenerarEnlaces(dto);
+            var esAdmin = await authorizationService.AuthorizeAsync(User, "EsAdmin");
+            GenerarEnlaces(dto, esAdmin.Succeeded);
             return dto;
         }
 
-        private void GenerarEnlaces(AutorDTO autorDTO)
+        private void GenerarEnlaces(AutorDTO autorDTO, bool esAdmin)
         {
             autorDTO.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutor", new { id = autorDTO.Id }), descripcion: "self", metodo: "GET"));
-            autorDTO.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("actualizarAutor", new { id = autorDTO.Id }), descripcion: "autor-actualizar", metodo: "PUT"));
-            autorDTO.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("borrarAutor", new { id = autorDTO.Id }), descripcion: "autor-borrar", metodo: "DELETE"));
+
+            if (esAdmin)
+            {
+                autorDTO.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("actualizarAutor", new { id = autorDTO.Id }), descripcion: "autor-actualizar", metodo: "PUT"));
+                autorDTO.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("borrarAutor", new { id = autorDTO.Id }), descripcion: "autor-borrar", metodo: "DELETE"));
+
+            }
         }
 
         [HttpGet("{nombre}", Name ="obtenerAutorPorNombre")]
@@ -82,7 +111,7 @@ namespace WebApi_Autores.Controllers
 
             var autorDTO = mapper.Map<AutorDTO>(autor);
 
-            return CreatedAtRoute("ObtenerAutor", new { id = autor.Id }, autorDTO);
+            return CreatedAtRoute("obtenerAutor", new { id = autor.Id }, autorDTO);
         }
 
         [HttpPut("{id:int}",Name ="actualizarAutor")]
