@@ -28,41 +28,20 @@ namespace WebApi_Autores.Controllers
         }
 
         [HttpGet(Name ="obtenerAutores")]
-        //[HttpGet("/listado")]
-        //[HttpGet("listado")]
         //[ResponseCache(Duration=10)]
-        //[ServiceFilter(typeof(MiFiltroDeAccion))]
         [AllowAnonymous]
-        public async Task<IActionResult> Get([FromQuery] bool incluirHATEOAS=true)
+        [ServiceFilter(typeof(HATEOASAutorFilterAttribute))]
+        public async Task<ActionResult<List<AutorDTO>>> Get([FromHeader] string incluirHATEOAS)
         {
             var autores = await context.Autores.ToListAsync();
-            var dtos = mapper.Map<List<AutorDTO>>(autores);
+            return mapper.Map<List<AutorDTO>>(autores);
 
-            if (incluirHATEOAS)
-            {
-                var esAdmin = await authorizationService.AuthorizeAsync(User, "EsAdmin");
-
-                dtos.ForEach(dto => GenerarEnlaces(dto, esAdmin.Succeeded));
-
-                var resultado = new ColeccionDeRecursos<AutorDTO> { Valores = dtos };
-
-                resultado.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutores", new { }), descripcion: "self", metodo: "GET"));
-
-                if (esAdmin.Succeeded)
-                {
-                    resultado.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("crearAutor", new { }), descripcion: "autor-crear", metodo: "POST"));
-                }
-
-                return Ok(resultado);
-            }            
-
-            return Ok(dtos);
         }
 
-        //[HttpGet("{id:int}/{param2?}")]
         [HttpGet("{id:int}",Name ="obtenerAutor")]
         [AllowAnonymous]
-        public async Task<ActionResult<AutorDTOConLibros>> Get(int id)
+        [ServiceFilter(typeof(HATEOASAutorFilterAttribute))]
+        public async Task<ActionResult<AutorDTOConLibros>> Get(int id, [FromHeader] string incluirHATEOAS)
         {
             var autor = await context.Autores
                 .Include(autorDB=>autorDB.AutoresLibros)
@@ -75,25 +54,11 @@ namespace WebApi_Autores.Controllers
             }
 
             var dto =  mapper.Map<AutorDTOConLibros>(autor);
-            var esAdmin = await authorizationService.AuthorizeAsync(User, "EsAdmin");
-            GenerarEnlaces(dto, esAdmin.Succeeded);
             return dto;
         }
 
-        private void GenerarEnlaces(AutorDTO autorDTO, bool esAdmin)
-        {
-            autorDTO.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("obtenerAutor", new { id = autorDTO.Id }), descripcion: "self", metodo: "GET"));
-
-            if (esAdmin)
-            {
-                autorDTO.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("actualizarAutor", new { id = autorDTO.Id }), descripcion: "autor-actualizar", metodo: "PUT"));
-                autorDTO.Enlaces.Add(new DatoHATEOAS(enlace: Url.Link("borrarAutor", new { id = autorDTO.Id }), descripcion: "autor-borrar", metodo: "DELETE"));
-
-            }
-        }
-
         [HttpGet("{nombre}", Name ="obtenerAutorPorNombre")]
-        public async Task<ActionResult<List<AutorDTO>>> Get(string nombre)
+        public async Task<ActionResult<List<AutorDTO>>> GetPorNombre([FromRoute] string nombre)
         {
             var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
 

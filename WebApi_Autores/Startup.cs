@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -62,12 +63,17 @@ namespace WebApi_Autores
                 });
             });
 
+            services.AddTransient<GeneradorEnlaces>();
+            services.AddTransient<HATEOASAutorFilterAttribute>();
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
             //servicio para encriptar
             services.AddDataProtection();
 
             services.AddTransient<HashService>();
 
-            services.AddTransient<MiFiltroDeAccion>();
+
+
             services.AddHostedService<EscribirEnArchivo>();
             services.AddResponseCaching();
 
