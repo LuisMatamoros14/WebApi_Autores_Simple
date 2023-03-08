@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 using WebApi_Autores.Filtros;
 using WebApi_Autores.Middleware;
 using WebApi_Autores.Servicios;
+using WebApi_Autores.Utilidades;
 
 namespace WebApi_Autores
 {
@@ -81,6 +82,9 @@ namespace WebApi_Autores
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
+
+                c.OperationFilter<AgregarParametroHATEOAS>();
+
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Name = "Authorization",
