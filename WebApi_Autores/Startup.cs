@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -12,6 +13,8 @@ using WebApi_Autores.Middleware;
 using WebApi_Autores.Servicios;
 using WebApi_Autores.Utilidades;
 
+
+[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 namespace WebApi_Autores
 {
     public class Startup
