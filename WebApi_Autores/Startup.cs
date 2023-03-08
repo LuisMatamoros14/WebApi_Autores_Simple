@@ -29,6 +29,7 @@ namespace WebApi_Autores
             services.AddControllers(options =>
             {
                 options.Filters.Add(typeof(FiltroDeExcepcion));
+                options.Conventions.Add(new SwaggerAgrupaPorVersion());
 
             }).AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles).AddNewtonsoftJson();
 
@@ -82,7 +83,10 @@ namespace WebApi_Autores
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(c =>
             {
-
+                c.SwaggerDoc("v1", new OpenApiInfo { Title="WebApiAutores", Version= "v1"});
+                c.SwaggerDoc("v2", new OpenApiInfo { Title="WebApiAutores", Version= "v2" });
+                
+                
                 c.OperationFilter<AgregarParametroHATEOAS>();
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -121,7 +125,10 @@ namespace WebApi_Autores
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c => {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json","WebApiAutores v1");
+                    c.SwaggerEndpoint("/swagger/v2/swagger.json","WebApiAutores v2");
+                });
             }
 
             app.UseHttpsRedirection();
