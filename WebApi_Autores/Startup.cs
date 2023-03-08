@@ -64,7 +64,10 @@ namespace WebApi_Autores
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins("https://www.apirequest.io").AllowAnyMethod().AllowAnyHeader().WithExposedHeaders();
+                    builder.WithOrigins("https://www.apirequest.io")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .WithExposedHeaders(new string[]{ "RegistrosPorPagina" });
                 });
             });
 
