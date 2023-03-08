@@ -11,11 +11,11 @@ using System.Text;
 using WebApi_Autores.DTOs;
 using WebApi_Autores.Servicios;
 
-namespace WebApi_Autores.Controllers
+namespace WebApi_Autores.Controllers.V1
 {
     [ApiController]
-    [Route("api/cuentas")]
-    public class CuentasController: ControllerBase
+    [Route("api/v1/cuentas")]
+    public class CuentasController : ControllerBase
     {
         private readonly UserManager<IdentityUser> userManager;
         private readonly IConfiguration configuration;
@@ -79,10 +79,10 @@ namespace WebApi_Autores.Controllers
         //    });
         //}
 
-        [HttpPost("registrar",Name ="registrarUsuario")]
+        [HttpPost("registrar", Name = "registrarUsuario")]
         public async Task<ActionResult<RespuestaAutenticacion>> Registrar(CredencialesUsuario credencialesUsuario)
         {
-            var usuario = new IdentityUser{ UserName= credencialesUsuario.Email, Email=credencialesUsuario.Email};
+            var usuario = new IdentityUser { UserName = credencialesUsuario.Email, Email = credencialesUsuario.Email };
             var resultado = await userManager.CreateAsync(usuario, credencialesUsuario.Password);
 
             if (resultado.Succeeded)
@@ -95,7 +95,7 @@ namespace WebApi_Autores.Controllers
             }
         }
 
-        [HttpPost("login",Name ="loginUsuario")]
+        [HttpPost("login", Name = "loginUsuario")]
         public async Task<ActionResult<RespuestaAutenticacion>> Login(CredencialesUsuario credencialesUsuario)
         {
             var resultado = await signInManager.PasswordSignInAsync(credencialesUsuario.Email, credencialesUsuario.Password, isPersistent: false, lockoutOnFailure: false);
@@ -111,7 +111,7 @@ namespace WebApi_Autores.Controllers
         }
 
         [HttpGet("renovarToken", Name = "renovarToken")]
-        [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<RespuestaAutenticacion>> Renovar()
         {
             var emailClaim = HttpContext.User.Claims.Where(claim => claim.Type == "email").FirstOrDefault();

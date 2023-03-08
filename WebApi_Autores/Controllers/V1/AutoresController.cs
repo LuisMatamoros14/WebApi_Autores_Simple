@@ -7,13 +7,13 @@ using WebApi_Autores.DTOs;
 using WebApi_Autores.Entidades;
 using WebApi_Autores.Filtros;
 
-namespace WebApi_Autores.Controllers
+namespace WebApi_Autores.Controllers.V1
 {
 
     [ApiController]
-    [Route("api/autores")]
+    [Route("api/v1/autores")]
     //Protegemos los endpoints a nivel controlador
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,Policy ="EsAdmin")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsAdmin")]
     public class AutoresController : ControllerBase
     {
         private readonly ApplicationDbContext context;
@@ -27,7 +27,7 @@ namespace WebApi_Autores.Controllers
             this.authorizationService = authorizationService;
         }
 
-        [HttpGet(Name ="obtenerAutores")]
+        [HttpGet(Name = "obtenerAutoresv1")]
         //[ResponseCache(Duration=10)]
         [AllowAnonymous]
         [ServiceFilter(typeof(HATEOASAutorFilterAttribute))]
@@ -38,26 +38,26 @@ namespace WebApi_Autores.Controllers
 
         }
 
-        [HttpGet("{id:int}",Name ="obtenerAutor")]
+        [HttpGet("{id:int}", Name = "obtenerAutorv1")]
         [AllowAnonymous]
         [ServiceFilter(typeof(HATEOASAutorFilterAttribute))]
         public async Task<ActionResult<AutorDTOConLibros>> Get(int id)
         {
             var autor = await context.Autores
-                .Include(autorDB=>autorDB.AutoresLibros)
-                .ThenInclude(libroDB=>libroDB.Libro)
-                .FirstOrDefaultAsync(x=>x.Id== id);
-            
-            if(autor == null)
+                .Include(autorDB => autorDB.AutoresLibros)
+                .ThenInclude(libroDB => libroDB.Libro)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (autor == null)
             {
                 return NotFound();
             }
 
-            var dto =  mapper.Map<AutorDTOConLibros>(autor);
+            var dto = mapper.Map<AutorDTOConLibros>(autor);
             return dto;
         }
 
-        [HttpGet("{nombre}", Name ="obtenerAutorPorNombre")]
+        [HttpGet("{nombre}", Name = "obtenerAutorPorNombrev1")]
         public async Task<ActionResult<List<AutorDTO>>> GetPorNombre([FromRoute] string nombre)
         {
             var autores = await context.Autores.Where(x => x.Nombre.Contains(nombre)).ToListAsync();
@@ -65,21 +65,21 @@ namespace WebApi_Autores.Controllers
             return mapper.Map<List<AutorDTO>>(autores);
         }
 
-        [HttpPost(Name ="crearAutor")]
+        [HttpPost(Name = "crearAutorv1")]
         public async Task<ActionResult> Post([FromBody] AutorCreacionDTO autorCreacionDTO)
         {
 
             var autor = mapper.Map<Autor>(autorCreacionDTO);
-            
+
             context.Add(autor);
             await context.SaveChangesAsync();
 
             var autorDTO = mapper.Map<AutorDTO>(autor);
 
-            return CreatedAtRoute("obtenerAutor", new { id = autor.Id }, autorDTO);
+            return CreatedAtRoute("obtenerAutorv1", new { id = autor.Id }, autorDTO);
         }
 
-        [HttpPut("{id:int}",Name ="actualizarAutor")]
+        [HttpPut("{id:int}", Name = "actualizarAutorv1")]
         public async Task<ActionResult> Put(AutorCreacionDTO autorCreacionDTO, int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id == id);
@@ -96,7 +96,7 @@ namespace WebApi_Autores.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id:int}",Name ="borrarAutor")]
+        [HttpDelete("{id:int}", Name = "borrarAutorv1")]
         public async Task<ActionResult> Delete(int id)
         {
             var existe = await context.Autores.AnyAsync(x => x.Id == id);
@@ -105,7 +105,7 @@ namespace WebApi_Autores.Controllers
                 return NotFound();
             }
 
-            context.Remove(new Autor(){ Id = id});
+            context.Remove(new Autor() { Id = id });
 
             await context.SaveChangesAsync();
             return Ok();
