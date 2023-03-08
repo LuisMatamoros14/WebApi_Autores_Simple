@@ -88,6 +88,7 @@ namespace WebApi_Autores
                 
                 
                 c.OperationFilter<AgregarParametroHATEOAS>();
+                c.OperationFilter<AgregarParametroXVersion>();
 
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {

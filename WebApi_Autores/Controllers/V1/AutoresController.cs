@@ -6,12 +6,15 @@ using Microsoft.EntityFrameworkCore;
 using WebApi_Autores.DTOs;
 using WebApi_Autores.Entidades;
 using WebApi_Autores.Filtros;
+using WebApi_Autores.Utilidades;
 
 namespace WebApi_Autores.Controllers.V1
 {
 
     [ApiController]
-    [Route("api/v1/autores")]
+    [Route("api/autores")]
+    [CabeceraEstaPresente("x-version","1")]
+    //[Route("api/v1/autores")]
     //Protegemos los endpoints a nivel controlador
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "EsAdmin")]
     public class AutoresController : ControllerBase
