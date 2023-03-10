@@ -87,7 +87,7 @@ namespace WebApi_Autores.Controllers.V1
 
             if (resultado.Succeeded)
             {
-                return await ConstruirToken(credencialesUsuario);
+                return await ConstruirToken(credencialesUsuario,usuario.Id);
             }
             else
             {
@@ -102,7 +102,8 @@ namespace WebApi_Autores.Controllers.V1
 
             if (resultado.Succeeded)
             {
-                return await ConstruirToken(credencialesUsuario);
+                var usuario = await userManager.FindByEmailAsync(credencialesUsuario.Email);
+                return await ConstruirToken(credencialesUsuario, usuario.Id);
             }
             else
             {
@@ -117,20 +118,24 @@ namespace WebApi_Autores.Controllers.V1
             var emailClaim = HttpContext.User.Claims.Where(claim => claim.Type == "email").FirstOrDefault();
             var email = emailClaim.Value;
 
+            var idClaim = HttpContext.User.Claims.Where(claim => claim.Type == "id").FirstOrDefault();
+            var usuarioId = idClaim.Value;
+
             var credencialesUsuario = new CredencialesUsuario()
             {
                 Email = email,
             };
 
-            return await ConstruirToken(credencialesUsuario);
+            return await ConstruirToken(credencialesUsuario, usuarioId);
         }
 
 
-        private async Task<RespuestaAutenticacion> ConstruirToken(CredencialesUsuario credencialesUsuario)
+        private async Task<RespuestaAutenticacion> ConstruirToken(CredencialesUsuario credencialesUsuario, string usuarioId)
         {
             var claims = new List<Claim>()
             {
-                new Claim("email", credencialesUsuario.Email)
+                new Claim("email", credencialesUsuario.Email),
+                new Claim("id", usuarioId)
             };
 
             var usuario = await userManager.FindByEmailAsync(credencialesUsuario.Email);

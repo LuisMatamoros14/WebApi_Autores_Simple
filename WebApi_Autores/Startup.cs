@@ -64,7 +64,8 @@ namespace WebApi_Autores
             {
                 options.AddDefaultPolicy(builder =>
                 {
-                    builder.WithOrigins("https://www.apirequest.io")
+                    //builder.WithOrigins("https://www.apirequest.io")
+                    builder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .WithExposedHeaders(new string[]{ "RegistrosPorPagina" });
